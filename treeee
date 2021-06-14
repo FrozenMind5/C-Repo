@@ -1,0 +1,83 @@
+using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+//using Newtonsoft.Json;
+
+namespace ConsoleApplication1
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            List<Node> nodes = new List<Node>();
+            nodes.Add(new Node() { Id = 1, Name = "China", ParentId = 0 });
+            nodes.Add(new Node() { Id = 2, Name = "Zhejiang Province", ParentId = 1 });
+            nodes.Add(new Node() { Id = 3, Name = "Hangzhou", ParentId = 2 });
+            nodes.Add(new Node() { Id = 4, Name = "Huzhou", ParentId = 2 });
+            nodes.Add(new Node() { Id = 5, Name = "Gongshu District", ParentId = 3 });
+            nodes.Add(new Node() { Id = 6, Name = "West Lake District", ParentId = 3 });
+            nodes.Add(new Node() { Id = 7, Name = "Binjiang District", ParentId = 3 });
+            nodes.Add(new Node() { Id = 8, Name = "Wuxing District", ParentId = 4 });
+            nodes.Add(new Node() { Id = 9, Name = "Nanxun District", ParentId = 4 });
+            nodes.Add(new Node() { Id = 10, Name = "Changxing County", ParentId = 4 });
+
+            List<Node> list = CreateTreeNodes(nodes);
+            Console.WriteLine(list.Count);
+            //Console.WriteLine(JsonConvert.SerializeObject(list, Formatting.Indented));
+            Console.ReadKey(true);
+        }
+
+        // Generate book
+        static List<Node> CreateTreeNodes(List<Node> nodes)
+        {
+            List<Node> root = nodes.FindAll(node => node.ParentId == 0);
+            
+            return SortNodes(nodes, root);
+        }
+
+        // Recursive grouping
+        static List<Node> SortNodes(List<Node> nodes, List<Node> root)
+        {
+            for (int i = 0; i < root.Count; i++)
+            {
+                List<Node> children = nodes.FindAll(node => node.ParentId == root[i].Id);
+               
+                SortNodes(nodes, children);
+                Console.WriteLine(root[0].Id + " " + root[0].Name + " " + root[0].ParentId + " " + root.Count);
+                root[i].Children = children;
+                
+                
+            }
+            
+            return root;
+        }
+    }
+
+    public class Node
+    {
+        /// <summary>
+        /// Numbering
+        /// </summary>
+        public int Id { get; set; }
+
+        /// <summary>
+        /// Upper level number
+        /// </summary>
+        public int ParentId { get; set; }
+
+        /// <summary>
+        /// name
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// child node
+        /// </summary>
+        public List<Node> Children;
+    }
+}
